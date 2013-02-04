@@ -31,4 +31,4 @@ subdown2 subreddit[,subreddit]  [--force,--top,--pages:#]
 
  - [memegrab.py](https://github.com/Ropes/MemeGrab) by [Josh Roppo](https://github.com/Ropes)
 
- - Original [subdown.py](https://github.com/radiosilence/subdown.py) script by [James Cleveland](https://github.com/radiosilence)
+ - Original [subdown.py](https://github.com/radiosilence/subdown) script by [James Cleveland](https://github.com/radiosilence)
