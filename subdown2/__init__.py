@@ -42,14 +42,14 @@ class Client:
         self.force = force
         self.top = top
         self.r = 'r/%s' %(self.name)
-        log.log('Fetching %s' %(self.r))
+        log.log(u'Fetching %s' %(self.r))
         try:
             os.mkdir(self.name)
         except OSError:
             pass
         
     def parse(self, page):
-        log.log('Queuing page %s of %s from %s' %(page, self.pages, self.r))
+        log.log(u'Queuing page %s of %s from %s' %(page, self.pages, self.r))
         params = {}
         if self.top:
             url = 'http://reddit.com/%s/top/.json' %(self.r)
@@ -60,14 +60,14 @@ class Client:
         if page != 1:
             params['after'] = self.after
         r = requests.get(url, params=params, headers=self.headers)
-        data = r.json
+        data = r.json()
         try:
             self.after = data['data']['after']
             items = data['data']['children']
         except KeyError:
             try:
                 if data['error'] == 429:
-                    log.log('Too many requests on the reddit API, taking a break for a minute', error=True)
+                    log.log(u'Too many requests on the reddit API, taking a break for a minute', error=True)
                     time.sleep(60)
                     self.parse(page)
                     return
@@ -106,7 +106,7 @@ class DownloadThread(threading.Thread):
         try:
             self.__process_url(object, dl_obj)
         except Exception, e:
-            log.log('Error %s on %s, skipping' % (str(e), object['url']), thread_name=self.getName(), error=True)
+            log.log(u'Error %s on %s, skipping' % (str(e), object['url']), thread_name=self.getName(), error=True)
     
     def __process_url(self, object, dl_obj):
         domain = object['domain']
@@ -132,7 +132,7 @@ class DownloadThread(threading.Thread):
             try:
                 dl_obj.Twitter(url)
             except:
-                log.log('Skipping %s since it is not supported yet' %(url), thread_name=self.getName(), error=True)
+                log.log(u'Skipping %s since it is not supported yet' %(url), thread_name=self.getName(), error=True)
         elif domain == 'yfrog.com':
             dl_obj.yfrog(url)
         elif domain == 'pagebin.com':
@@ -184,7 +184,7 @@ def main():
         log.log(helptext,error=True)
         #gui.main()
     except KeyboardInterrupt:
-        log.log('KeyboardInterrupt recieved.',error=True)
+        log.log(u'KeyboardInterrupt recieved.',error=True)
         sys.exit(1)
         
 

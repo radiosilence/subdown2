@@ -17,7 +17,7 @@ IMAGE_Q = Queue.Queue()
 def initialize_imgur_checking():
     if not os.path.isfile('.bad_imgur.jpg'):
         obj = requests.get('http://i.imgur.com/sdlfkjdkfh.jpg')
-        text = obj.read()
+        text = obj.content
         obj.close()
         f = open('.bad_imgur.jpg', 'w')
         f.write(text)
@@ -45,13 +45,13 @@ class Download_Thread(threading.Thread):
             return
         text = req.text
         if md5.new(text).digest() == self.bad_imgur:
-            self.output('%s has been removed from imgur.com' %link, error=True)
+            self.output(u'%s has been removed from imgur.com' %link, error=True)
             return
         f = open(filename, 'w')
         f.write(text)
         f.close()
         os.utime(filename, (time, time))
-        self.output('Setting time to %s' %(time))
+        self.output(u'Setting time to %s' %(time))
     
     
     def run(self):
@@ -97,10 +97,10 @@ class Downloader:
         path = self.reddit+'/'+filename
         if os.path.isfile(path) and (not self.force):
             os.utime(path, (self.time, self.time))
-            self.output('Skipping %s since it already exists' %(link))
+            self.output(u'Skipping %s since it already exists' %(link))
             return
         #download the image, so add it to the queue
-        self.output('Adding %s to queue.' % link)
+        self.output(u'Adding %s to queue.' % link)
         IMAGE_Q.put((link, path, self.time))
 
     def Imgur(self, link):
@@ -110,14 +110,14 @@ class Downloader:
         #determine whether it is an album or just one image
         if '/a/' in link:
             #it's an album!
-            self.output('Processing Imgur album: %s' %(link))
+            self.output(u'Processing Imgur album: %s' %(link))
             link = link.split('#')[0]
             id = link.split('/a/')[1]
             api_link = 'http://api.imgur.com/2/album/%s.json' %(id)
             api = self.page_grab(api_link, json=True)
             for image in api['album']['images']:
                 self.Raw(image['links']['original'])
-            self.output('Finished Imgur album: %s' %(link))
+            self.output(u'Finished Imgur album: %s' %(link))
         else:
             #it's a raw image
             id = link.split('/')[-1]
@@ -131,7 +131,7 @@ class Downloader:
         try:
             id = int(link.split('/status/')[-1])
         except:
-            self.output('Can\'t parse tweet: %s' %(link), True)
+            self.output(u'Can\'t parse tweet: %s' %(link), True)
             return
         stat = api.GetStatus(id)
         text = stat.text
@@ -174,11 +174,11 @@ class Downloader:
             return
         self.Raw(imglink)
     def qkme(self, link):
-        self.output('Grabbing %s.' %(link))
+        self.output(u'Grabbing %s.' %(link))
         try:
             memegrab.get_image_qm(memegrab.read_url(link), self.reddit+'/')
         except:
-            self.output('Error on %s' %(link), True)
+            self.output(u'Error on %s' %(link), True)
     def All(self, link):
         #verify it is an html page, not a raw image.
         headers = self.page_grab(link, want_headers=True)
@@ -191,7 +191,7 @@ class Downloader:
         if is_image: #means it is most likely an image
             self.Raw(link)
             return
-        self.output('Skipping %s since it is not an image.' %(link))
+        self.output(u'Skipping %s since it is not an image.' %(link))
         return
     def setTime(self, time):
         self.time = time
@@ -210,6 +210,6 @@ class Downloader:
             return r.headers
         else:
             if json:
-                return r.json
+                return r.json()
             return r.text
 
